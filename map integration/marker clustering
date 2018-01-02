@@ -1,0 +1,93 @@
+// catch data from url through passing parameters almofire
+func addmarker(){
+        
+            let parameters: Parameters = [
+                "UserId":"1",
+                "method": "getDashboardData",
+                "status":"TOTAL"
+            ]
+            let url = "http://192.168.10.79:8080/GPS/mobileservice?"
+            
+            Alamofire.request(url, method:.post, parameters:parameters).responseJSON { response in
+                switch response.result {
+                case .success( _):
+                    
+                    self.LON.removeAll(keepingCapacity: true)
+                    self.LAT.removeAll(keepingCapacity: true)
+                     if response.result.value != nil{
+                     self.dic = response.result.value as! NSDictionary
+                     let strStatus = NSString(string: self.dic["RESULT"] as! String)
+                        if (strStatus.isEqual(to: "SUCCESS")){
+                            // debugPrint(response)
+                            let dicList = self.dic.object(forKey: "DATA") as! NSArray
+                            //  print(dicList)
+                            self.arr.addObjects(from: dicList as! [Any])
+                           // self.gene(arr1: self.arr)
+                            //self.clusterManager.cluster()
+                            let cou:Int = dicList.count
+                            if (dicList.count > 0){
+                            for i1 in 0 ..< cou{
+                                
+                                self.arr.addObjects(from: dicList as! [Any])
+                                let lon = ((dicList).object(at:i1) as AnyObject).value(forKey: "LON") as! String
+                                let lat  = ((dicList).object(at: i1) as AnyObject).value(forKey: "LAT") as! String
+                                let name = ((dicList).object(at:i1) as AnyObject).value(forKey: "VEHICLE_NUMBER") as! String
+                                //let id = ((dicList).object(at:i1) as AnyObject).value(forKey: "VEHICLE_ID") as! String
+                               // self.gene(arr1: self.arr, id: name)
+                               // self.clusterManager.cluster()
+                                
+                                if lat != "--" || lon != "--"{
+                                    let lon1 = Double(lon)!
+                                    let lat1 = Double(lat)!
+                                    let id = ((dicList).object(at:i1) as AnyObject).value(forKey: "VEHICLE_ID") as! String
+                                   // print(id)
+                                    self.marker1(latitude: lat1, longitude: lon1, vehicalname: name, id: id)
+                                   // self.gene(arr1: self.arr, id: name)
+                                    self.clusterManager.cluster()
+                                }
+                                
+ 
+                            }
+                                //self.clusterManager.cluster()
+                            }
+                    }
+                    }
+                case .failure(let error):
+                    print(error)
+                }
+               
+            }
+    }
+    //add multiple marker on map
+    func marker1(latitude: Double,longitude: Double,vehicalname: String,id: String)  {
+        
+       // let id = ((self.arr ).object(at:i) as AnyObject).value(forKey: "VEHICLE_ID") as! String
+    
+        let label: UILabel = UILabel(frame: CGRect(x: 0, y: 0, width: 50, height: 20))
+        label.text = id
+        label.textAlignment = .center
+        label.backgroundColor = UIColor.clear
+        let view = UIView(frame: CGRect(x: 0, y: 0, width: 100, height: 57))
+        label.frame =  CGRect(x: 0, y: view.frame.maxY-20, width: 100, height: 20)
+        view.backgroundColor = UIColor.clear
+       
+        view.insertSubview(label, at: 1)
+        let imgview: UIImageView = UIImageView(image: UIImage(named: "aeroplane.png"))
+        imgview.center = CGPoint(x:view.center.x, y:view.frame.maxY-37)
+        
+        view.insertSubview(imgview, at: 2)
+        markerIcon = self.imageFromView(view: view)
+        //let  marker :GMSMarker = GMSMarker()
+       // marker.position = CLLocationCoordinate2DMake(latitude, longitude)
+        //marker.title = vehicalname
+        
+        //marker.icon = markerIcon
+       // marker.icon = GMSMarker.markerImage(with: .black)
+       // marker.map = mp
+        
+        let item = POIItem(position: CLLocationCoordinate2DMake(latitude, longitude), name: marker)
+        
+        clusterManager.add(item)
+        self.clusterManager.cluster()
+       
+    }
