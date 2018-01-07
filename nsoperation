@@ -1,0 +1,102 @@
+//
+//  ViewController.swift
+//  nsoperation
+//
+//  Created by Admin on 1/7/18.
+//  Copyright © 2018 Admin. All rights reserved.
+//
+
+import UIKit
+
+let imageURLs = ["http://www.planetware.com/photos-large/F/france-paris-eiffel-tower.jpg", "http://adriatic-lines.com/wp-content/uploads/2015/04/canal-of-Venice.jpg", "http://www.planetware.com/photos-large/F/france-paris-eiffel-tower.jpg", "http://www.planetware.com/photos-large/F/france-paris-eiffel-tower.jpg"]
+class downloader {
+  class  func downloadimgwithurl(url:String) -> UIImage! {
+        let data = try? Data(contentsOf: URL(string: url)!)
+        return UIImage(data: data!)
+        
+    }
+}
+
+
+class ViewController: UIViewController {
+
+    @IBOutlet var sld: UISlider!
+    @IBOutlet var im4: UIImageView!
+    @IBOutlet var img3: UIImageView!
+    @IBOutlet var img2: UIImageView!
+    @IBOutlet var img1: UIImageView!
+    
+    var queue = OperationQueue()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
+    }
+
+    @IBAction func btn(_ sender: Any) {
+        queue = OperationQueue()
+        let ope1 = BlockOperation(block:{
+            DispatchQueue.main.async {
+                let img11 = downloader.downloadimgwithurl(url: imageURLs[0])
+                OperationQueue.main.addOperation({
+                    self.img1.image = img11
+                })
+            }
+            
+        })
+        ope1.completionBlock = {
+            print("Operation 1 completed, cancelled:\(ope1.isCancelled)") }
+        queue.addOperation(ope1)
+        
+        let ope2 = BlockOperation(block:{
+            DispatchQueue.main.async {
+                let img12 = downloader.downloadimgwithurl(url: imageURLs[1])
+                OperationQueue.main.addOperation({
+                    self.img2.image = img12
+                })
+            }
+            
+        })
+        ope1.completionBlock = {
+            print("Operation 2 completed, cancelled:\(ope2.isCancelled)") }
+        queue.addOperation(ope2)
+        
+        let ope3 = BlockOperation(block:{
+            DispatchQueue.main.async {
+               
+                let img13 = downloader.downloadimgwithurl(url: imageURLs[2])
+                OperationQueue.main.addOperation({
+                    self.img3.image = img13
+                })
+            }
+            
+        })
+        ope1.completionBlock = {
+            print("Operation 3 completed, cancelled:\(ope3.isCancelled)") }
+        queue.addOperation(ope3)
+        
+        let ope4 = BlockOperation(block:{
+            DispatchQueue.main.async {
+                let img14 = downloader.downloadimgwithurl(url: imageURLs[3])
+                OperationQueue.main.addOperation({
+                    self.im4.image = img14
+                })
+
+            }
+        })
+        ope1.completionBlock = {
+            print("Operation 4 completed, cancelled:\(ope4.isCancelled)") }
+        queue.addOperation(ope4)
+        
+    }
+    @IBAction func sliderer(_ sender: Any) {
+       // self.sld.text = "\(sender.value * 100.0)"
+    }
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+
+
+}
+
